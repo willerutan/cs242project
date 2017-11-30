@@ -52,6 +52,8 @@ local function class(parent, child)
 	Class.constructor = constructor
 	Class.metamethods = metamethods
 	table.merge(parent_metamethods, Class.metamethods)
+	Class.immortal = {}
+	Class.currentState = nil
 
 	setmetatable(Class.methods, {__index = parent.methods})
 	setmetatable(Class.data, {__index = parent.data})
@@ -69,7 +71,7 @@ local function class(parent, child)
 		
 
   	function Class.new(...)
-		--print('\n\nnew invoked ********************************************')
+
 		local public_inst = {}
 		local private_inst = {}
 
@@ -84,13 +86,19 @@ local function class(parent, child)
 	
 
 		local publicIdxFunc = function(t, k)
-			--print('publicIdxFunc invoked with method:', k)
+			if Class.currentState == 'immortal' and Class.immortal ~= nil then
+				if Class.immortal[k] ~= nil then
+					local f = function(t, ...)
+						return Class.immortal[k](private_inst, ...)
+					end
+					return f
+				end
+			end
+
 			if Class.methods[k] == nil then
-				--print('its nil')
 				return nil
 			else
 				local f = function(t, ...)
-					--print('calling method '..k..' with private_inst')
 					return Class.methods[k](private_inst, ...)
 				end
 				return f
@@ -108,10 +116,23 @@ local function class(parent, child)
 		function public_inst:isinstance(cls)
 			return Class.isinstance(self, cls)
 		end
+
+		function public_inst:gotoState(state)
+			Class.currentState = state
+		end
+
+		function public_inst:getState()
+			return Class.currentState
+		end
 		
-		--print('new function returning:', public_inst)
   		return public_inst
 
+	end
+
+
+	function Class.addState(state)
+		Class.state = {}
+		return Class.state
 	end
 
   return Class

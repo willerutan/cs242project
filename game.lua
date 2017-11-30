@@ -28,11 +28,16 @@ local Game = class.class(
 
       -- Place hero, lights, and monsters.
       self.hero = Hero.new(self, self:RandomFloor())
+	  --self.hero:gotoState('immortal')
+	  --self:Log("hero is immortal now!")
+	  --self.hero:gotoState(nil)
+	  self:Log("hero is normal now!")
       --self.lights = {Light.new(self, self.hero:Pos(), 0.5), Light.new(self, self:RandomFloor(), 1.0)}
       self.lights = {Light.new(self, self.hero:Pos(), 0.5)}
       for i = 1, self.NUM_MONSTERS do
         Monster.new(self, self:RandomFloor())
       end
+
     end,
 
     data = {
@@ -58,12 +63,24 @@ local Game = class.class(
         termfx.attributes(FG, BG)
         ok, err = pcall(function()
             self:Draw()
+			local count = 0
             while true do
               evt = termfx.pollevent()
               if evt.char == "q" then
                 break
               else
-                self:HandleInput(evt)
+				count = count + 1
+				if count == 30 then 
+					if self.hero.getState() == nil then
+                		self.hero:gotoState('immortal')
+						self:Log("hero is immortal now!")
+					else
+						self.hero:gotoState(nil)
+						self:Log("hero is normal now!")
+					end
+					count = 0
+				end
+				self:HandleInput(evt)
               end
               self:Draw()
             end
