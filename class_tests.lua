@@ -1,6 +1,9 @@
 local class = require("class")
 
 function test_classes()
+  local Mixin = {}
+  function Mixin:foo() return 'foo' end
+  function Mixin:bar() return 'bar' end
   local ParentClass = class.class(
     class.Object, {
       constructor = function(self)
@@ -17,7 +20,7 @@ function test_classes()
         should_change = 1,
       },
 
-	  metamethods = {__add = function() return 3 end}
+    metamethods = {__add = function() return 3 end}
   })
 
   local ChildClass = class.class(
@@ -37,7 +40,7 @@ function test_classes()
 
   function private_field_from_outside()
     local c = ParentClass.new()
-	print('result:', c.should_change)
+  print('result:', c.should_change)
     assert(c.should_change == nil)
   end
 
@@ -75,6 +78,17 @@ function test_classes()
     assert(c.undeclared == nil)
   end
 
+  function mixin()
+    ParentClass:include(Mixin)
+    local c = ParentClass.new()
+    local d = ChildClass.new()
+    print("mixin")
+    assert(c.foo() == "foo")
+    assert(c.bar() == "bar")
+    assert(d.foo() == "foo")
+    assert(d.bar() == "bar")
+  end
+
   private_field_from_outside()
   --private_field_from_callback()
   private_field_from_method()
@@ -82,6 +96,7 @@ function test_classes()
   one_long_inheritance()
   two_long_inheritance()
   assign_undeclared_member()
+  mixin()
 
   print("All tests succeeded!")
 end

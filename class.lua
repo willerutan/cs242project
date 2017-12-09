@@ -38,22 +38,20 @@ local function class(parent, child)
   -- The "child.methods or {}" syntax can be read as:
   -- "if child.methods is nil then this expression is {}, otherwise it is child.methods"
   -- Generally, "a or b" reduces to b if a is nil or false, evaluating to a otherwise.
-  local methods = child.methods or {}
-  local data = child.data or {}
-  local constructor = child.constructor or parent.constructor
-  local metamethods = child.metamethods or {}
+	local methods = child.methods or {}
+	local data = child.data or {}
+	local constructor = child.constructor or parent.constructor
+	local metamethods = child.metamethods or {}
 	local parent_metamethods = parent.metamethods or {}
 
 
-  local Class = {}
+  	local Class = {}
 
 	Class.methods = methods
 	Class.data = data
 	Class.constructor = constructor
 	Class.metamethods = metamethods
 	table.merge(parent_metamethods, Class.metamethods)
-	Class.immortal = {}
-	Class.currentState = nil
 
 	setmetatable(Class.methods, {__index = parent.methods})
 	setmetatable(Class.data, {__index = parent.data})
@@ -71,7 +69,6 @@ local function class(parent, child)
 		
 
   	function Class.new(...)
-
 		local public_inst = {}
 		local private_inst = {}
 
@@ -83,18 +80,8 @@ local function class(parent, child)
 		table.merge(Class.metamethods, private_meta_combined)
 		table.merge({__index = privateIdxFunc}, private_meta_combined)
 		setmetatable(private_inst, private_meta_combined)
-	
 
 		local publicIdxFunc = function(t, k)
-			if Class.currentState == 'immortal' and Class.immortal ~= nil then
-				if Class.immortal[k] ~= nil then
-					local f = function(t, ...)
-						return Class.immortal[k](private_inst, ...)
-					end
-					return f
-				end
-			end
-
 			if Class.methods[k] == nil then
 				return nil
 			else
@@ -117,22 +104,19 @@ local function class(parent, child)
 			return Class.isinstance(self, cls)
 		end
 
-		function public_inst:gotoState(state)
-			Class.currentState = state
+		-- mixins
+		function Class.include(self, ...)
+			-- add in component table (like class.methods)
+			-- every call needs to be object.component.method
+			local components = {...}
+			for _, component in pairs(components) do
+				if type(component) == "table" then
+					table.merge(component, Class.methods)
+				end
+			end
 		end
-
-		function public_inst:getState()
-			return Class.currentState
-		end
-		
   		return public_inst
 
-	end
-
-
-	function Class.addState(state)
-		Class.state = {}
-		return Class.state
 	end
 
   return Class
