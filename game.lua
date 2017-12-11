@@ -70,13 +70,16 @@ local Game = class.class(
                 break
               else
 				count = count + 1
-				if count == 30 then 
+				if count == 10 then 
 					if self.hero.getState() == nil then
                 		self.hero:gotoState('immortal')
 						self:Log("hero is immortal now!")
-					else
+					elseif self.hero.getState() == 'immortal' then
+						self.hero:gotoState('weak')
+						self:Log("hero is weak now!")
+					elseif self.hero.getState() == 'weak' then
 						self.hero:gotoState(nil)
-						self:Log("hero is normal now!")
+						self:Log('hero is normal now!')
 					end
 					count = 0
 				end

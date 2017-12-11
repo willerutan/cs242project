@@ -52,8 +52,9 @@ local function class(parent, child)
 	Class.constructor = constructor
 	Class.metamethods = metamethods
 	table.merge(parent_metamethods, Class.metamethods)
-	Class.immortal = {}
+	--Class.immortal = {}
 	Class.currentState = nil
+	Class.states = {}
 
 	setmetatable(Class.methods, {__index = parent.methods})
 	setmetatable(Class.data, {__index = parent.data})
@@ -86,10 +87,11 @@ local function class(parent, child)
 	
 
 		local publicIdxFunc = function(t, k)
-			if Class.currentState == 'immortal' and Class.immortal ~= nil then
-				if Class.immortal[k] ~= nil then
+			local state = Class.currentState
+			if state ~= nil and Class.states[state] ~= nil then
+				if Class.states[state][k] ~= nil then
 					local f = function(t, ...)
-						return Class.immortal[k](private_inst, ...)
+						return Class.states[state][k](private_inst, ...)
 					end
 					return f
 				end
@@ -124,15 +126,15 @@ local function class(parent, child)
 		function public_inst:getState()
 			return Class.currentState
 		end
-		
+
   		return public_inst
 
 	end
 
 
-	function Class.addState(state)
-		Class.state = {}
-		return Class.state
+	function Class:addState(state)
+		Class.states[state] = {}
+		return Class.states[state]
 	end
 
   return Class

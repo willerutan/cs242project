@@ -40,29 +40,50 @@ local Hero = class.class(
 })
 
 
---local Immortal = Hero:addState('Immortal')
---print('content of Hero.states:')
---print_table(Hero.states)
+local immortal = Hero:addState('immortal')
+--print('immortal:')
+--print(immortal)
+--print(Hero.states.immortal)
 
-function Hero.immortal:SetHealth(h)
+function immortal:SetHealth(h)
   	self.game:Log('I am UNBREAKABLE!!')
 end
 
-function Hero.immortal:Think()
+function immortal:Think()
 	--print('Hero is thinking in immortal mode!!')
 	--self.game:Log('Hero is thinking in immortal mode!!')
 end
 
-function Hero.immortal:Color(self)
+function immortal:Color(self)
 	return termfx.color.MAGENTA
 end
 
-function Hero.immortal:Char(self)
+function immortal:Char(self)
 	return '@'
 end
 
-print('content of Hero.states:')
-print_table(Hero)
+local weak = Hero:addState('weak')
+
+function weak:Think()
+	--self.game:Log('Hero is weak ..... orz')
+end
+
+function weak:Char(self)
+	return 'w'
+end
+
+function weak:Color(self)
+	return termfx.color.WHITE
+end
+
+function weak:SetHealth(h)
+    self.game:Log(string.format('You are weak! Your health is now %d', h-2))
+    Entity.methods.SetHealth(self, h-2)
+end
+
+--print('content of Hero.states.immortal:')
+--print(Hero.states['immortal'])
+--print_table(Hero.states.immortal)
 --[[print('content of immortal:')
 print_table(Immortal)
 print('content of Hero.states:')
