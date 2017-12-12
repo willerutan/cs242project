@@ -20,64 +20,58 @@ local function class()
   end
 
   --components
-  Class.components = {}
-  function Class.addComponent(self, name, component, ...)
-    if type(component) == "table" then
-      component.constructor(component.data, ...)
-      self.components[name] = component
-      for k, v in pairs(component.methods) do
-        if type(v) == "function" and k ~= "new" then
-          if Class[k] == nil then
-            Class[k] = function(...)
-              return component.methods[k](component.data, ...)
+  
+  function Class.new( )
+    local inst = {}
+    inst.components = {}
+    inst.isinstance = function( ... )
+      return false
+    end
+    function inst.addComponent(self, name, component, ...)
+      if type(component) == "table" then
+        local dataInst = {}
+        local getData = function(t, k)
+          return component.data[k] or component.methods[k]
+        end
+        setmetatable(dataInst, {__index = getData})
+        
+        component.constructor(dataInst, ...)
+        self.components[name] = component
+        for k, v in pairs(component.methods) do
+          if type(v) == "function" and k ~= "new" and k ~= "isinstance" then
+            -- print(k, v)
+            if self[k] == nil then
+              self[k] = function(...)
+                return component.methods[k](dataInst, ...)
+              end
+            elseif type(self[k]) == "function" then
+              self[k] = function(...)
+                return "duplicate method names: use components to call method"
+              end
             end
-          else
-            Class[k] = -1
           end
         end
+        local componentFunc = function(t, k)        
+          if component.methods[k] == nil then
+            return nil
+          else
+            local f = function(t, ...)
+              return component.methods[k](dataInst, ...)
+            end
+            return f
+          end
+        end
+        local componentInst = {}
+        setmetatable(componentInst, {__index = componentFunc})
+        self[name] = componentInst
       end
-      -- print_table(Class)
-      return component
     end
-    -- print_table(Class.components)
+    return inst
   end
 
-  function Class.new(...)
-    -- print("------------ class components ------------")
-    -- print_table(Class.components)
-    local inst = {}
-    for name, component in pairs(Class.components) do
-      local componentFunc = function(t, k)        
-        if Class.components[name].methods[k] == nil then
-          return nil
-        else
-          -- print(t, k)
-          local f = function(t, ...)
-            return Class.components[name].methods[k](Class.components[name].data, ...)
-          end
-          return f
-        end
-      end
-      local componentInst = {}
-      setmetatable(componentInst, {__index = componentFunc})
-      inst[name] = componentInst
-    end
-    local mixinFunc = function(t, k)
-      if Class[k] == nil then
-        return nil
-      elseif Class[k] == -1 then
-        return function( ... )
-          return "duplicate method names: use components to call method"
-        end
-      else
-        local f = function(t, ...)
-          return Class[k](...)
-        end
-        return f
-      end
-    end
-    setmetatable(inst, {__index = mixinFunc})
-    return inst
+  function Class.isinstance( ... )
+    -- subclass compatibility
+    return false
   end
   return Class
 

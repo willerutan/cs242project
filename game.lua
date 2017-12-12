@@ -3,6 +3,8 @@ local Tiles = require "tiles"
 local Hero = require "hero"
 local Monster = require "monster"
 local Light = require "light"
+local ClassComponent = require "classComponent"
+local basicItem = require "basicItem"
 
 local FG
 local BG
@@ -37,6 +39,14 @@ local Game = class.class(
       for i = 1, self.NUM_MONSTERS do
         Monster.new(self, self:RandomFloor())
       end
+
+      local Item = ClassComponent.class()
+      -- Item:addComponent("goodItem", goodItem)
+      -- Item:addComponent("vanishes", vanishes)
+      for i = 1, 10 do
+     		local item = Item.new()
+     		item:addComponent("basicItem", basicItem, self, self:RandomFloor())
+     	end
 
     end,
 

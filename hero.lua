@@ -23,8 +23,10 @@ local Hero = class.class(
   Entity, {
     methods = {
       Collide = function(self, e)
-        self.game:Log("You hit a monster for 10 damage.")
-        e:SetHealth(e:Health() - 10)
+        if e:Id() < 1000 then
+          self.game:Log("You hit a monster for 10 damage.")
+          e:SetHealth(e:Health() - 10)
+        end
       end,
 
       SetHealth = function(self, h)

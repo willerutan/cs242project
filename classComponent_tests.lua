@@ -60,9 +60,11 @@ function test_class_components()
 	}
 
 	local Entity = class.class()
-	Entity:addComponent("partOne", partOne, "aa")
-	Entity:addComponent("partTwo", partTwo)
+	-- append constructor values as parameters
 	local entity1 = Entity.new()
+	entity1:addComponent("partOne", partOne, "aa")
+	entity1:addComponent("partTwo", partTwo)
+	
 	print("------ component test ------")
 	assert(entity1.partOne.getName() == "aa")
 	assert(entity1.partOne.changeOne(self, 3) == 3)
