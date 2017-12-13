@@ -46,6 +46,7 @@ local Game = class.class(
       for i = 1, 10 do
      		local item = Item.new()
      		item:addComponent("basicItem", basicItem, self, self:RandomFloor())
+     		table.insert(self.entities, item)
      	end
 
     end,
@@ -58,6 +59,7 @@ local Game = class.class(
       hero = nil,
       lights_on = false,
       entities = {},
+      items = {},
       lights = {},
       MAP_SIZE = Point.new(70, 30),
       LOG_SIZE = Point.new(40, 30),
