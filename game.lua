@@ -59,7 +59,6 @@ local Game = class.class(
       hero = nil,
       lights_on = false,
       entities = {},
-      items = {},
       lights = {},
       MAP_SIZE = Point.new(70, 30),
       LOG_SIZE = Point.new(40, 30),

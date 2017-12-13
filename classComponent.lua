@@ -68,11 +68,6 @@ local function class()
     end
     return inst
   end
-
-  function Class.isinstance( ... )
-    -- subclass compatibility
-    return false
-  end
   return Class
 
 end
