@@ -27,8 +27,13 @@ local Hero = class.class(
           self.game:Log("You hit a monster for 10 damage.")
           e:SetHealth(e:Health() - 10)
 		else
-			self.game:DeleteEntity(e)
-			self.game:GoImmortal()
+			if e.ItemType() == 'immortal' then
+				self.game:DeleteEntity(e)
+				self.game:GoImmortal()
+			end
+			if e.ItemType() == 'bomb' then
+				self.game:DeleteEntity(self)
+			end
         end
       end,
 

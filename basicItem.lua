@@ -20,12 +20,13 @@ end
 local id = 1000
 
 local basicItem = {
-  constructor = function(self, game, pos)
+  constructor = function(self, game, pos, itemType)
     -- print("game", game, pos)
     self.game = game
     self.pos = pos
     self.id = id
     id = id + 1
+	self.itemType = itemType
   end,
 
   data = {
@@ -35,6 +36,11 @@ local basicItem = {
   }, 
 
   methods = {
+
+	  ItemType = function(self)
+		return self.itemType
+	  end,
+
       Id = function(self)
         return self.id
       end,
@@ -48,11 +54,21 @@ local basicItem = {
       end,
 
       Char = function(self)
-        return "*"
+		if self.itemType == 'immortal' then
+        	return "I"
+		end
+		if self.itemType == 'bomb' then
+			return "B"
+		end
       end,
 
       Color = function(self)
-        return termfx.color.CYAN
+		if self.itemType == 'immortal' then
+        	return termfx.color.BLUE
+		end
+		if self.itemType == 'bomb' then
+			return termfx.color.MAGENTA
+		end
       end,
 
       Value = function(self)

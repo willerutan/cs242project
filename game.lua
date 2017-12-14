@@ -45,9 +45,16 @@ local Game = class.class(
 
       for i = 1, self.NUM_IMMORTALITEMS do
         local item = Item.new()
-        item:addComponent("immortalItem", immortalItem, self, self:RandomFloor())
+        item:addComponent("basicItem", basicItem, self, self:RandomFloor(), 'immortal')
         table.insert(self.entities, item)
       end
+
+	  for i = 1, self.NUM_BOMBS do
+        local item = Item.new()
+        item:addComponent("basicItem", basicItem, self, self:RandomFloor(), 'bomb')
+        table.insert(self.entities, item)
+      end
+	
 
     end,
 
@@ -63,7 +70,8 @@ local Game = class.class(
       MAP_SIZE = Point.new(70, 30),
       LOG_SIZE = Point.new(40, 30),
       NUM_MONSTERS = 10,
-	  NUM_IMMORTALITEMS = 7,
+	  NUM_IMMORTALITEMS = 5,
+	  NUM_BOMBS = 2,
 	  timer = -1
     },
 
