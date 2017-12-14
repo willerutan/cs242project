@@ -26,6 +26,9 @@ local Hero = class.class(
         if e:Id() < 1000 then
           self.game:Log("You hit a monster for 10 damage.")
           e:SetHealth(e:Health() - 10)
+		else
+			self.game:DeleteEntity(e)
+			self.game:GoImmortal()
         end
       end,
 
@@ -43,9 +46,7 @@ local Hero = class.class(
 
 
 local immortal = Hero:addState('immortal')
---print('immortal:')
---print(immortal)
---print(Hero.states.immortal)
+
 
 function immortal:SetHealth(h)
   	self.game:Log('I am UNBREAKABLE!!')
@@ -83,16 +84,5 @@ function weak:SetHealth(h)
     Entity.methods.SetHealth(self, h-2)
 end
 
---print('content of Hero.states.immortal:')
---print(Hero.states['immortal'])
---print_table(Hero.states.immortal)
---[[print('content of immortal:')
-print_table(Immortal)
-print('content of Hero.states:')
-print_table(Hero.states)
-
-local mortal = Hero:addState('mortal')
-print('content of Hero.states:')
-print_table(Hero.states)]]
 
 return Hero

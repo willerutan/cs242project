@@ -19,7 +19,7 @@ end
 
 local id = 1000
 
-local basicItem = {
+local immortalItem = {
   constructor = function(self, game, pos)
     -- print("game", game, pos)
     self.game = game
@@ -48,11 +48,11 @@ local basicItem = {
       end,
 
       Char = function(self)
-        return "*"
+        return "I"
       end,
 
       Color = function(self)
-        return termfx.color.CYAN
+        return termfx.color.MAGENTA
       end,
 
       Value = function(self)
@@ -85,6 +85,6 @@ local basicItem = {
 }
 
 
-return basicItem
+return immortalItem
 
       

@@ -5,6 +5,7 @@ local Monster = require "monster"
 local Light = require "light"
 local ClassComponent = require "classComponent"
 local basicItem = require "basicItem"
+local immortalItem = require 'immortalItem'
 
 local FG
 local BG
@@ -30,24 +31,23 @@ local Game = class.class(
 
       -- Place hero, lights, and monsters.
       self.hero = Hero.new(self, self:RandomFloor())
+	  self:Log('Heros ID is: '..tostring(self.hero.Id()))
+      self:Log("Hero is normal now!")
 	  --self.hero:gotoState('immortal')
-	  --self:Log("hero is immortal now!")
-	  --self.hero:gotoState(nil)
-	  self:Log("hero is normal now!")
       --self.lights = {Light.new(self, self.hero:Pos(), 0.5), Light.new(self, self:RandomFloor(), 1.0)}
       self.lights = {Light.new(self, self.hero:Pos(), 0.5)}
       for i = 1, self.NUM_MONSTERS do
-        Monster.new(self, self:RandomFloor())
+        local monster = Monster.new(self, self:RandomFloor())
+		self:Log('monsters ID is: '..tostring(monster.Id()))
       end
 
       local Item = ClassComponent.class()
-      -- Item:addComponent("goodItem", goodItem)
-      -- Item:addComponent("vanishes", vanishes)
-      for i = 1, 10 do
-     		local item = Item.new()
-     		item:addComponent("basicItem", basicItem, self, self:RandomFloor())
-     		table.insert(self.entities, item)
-     	end
+
+      for i = 1, self.NUM_IMMORTALITEMS do
+        local item = Item.new()
+        item:addComponent("immortalItem", immortalItem, self, self:RandomFloor())
+        table.insert(self.entities, item)
+      end
 
     end,
 
@@ -59,11 +59,12 @@ local Game = class.class(
       hero = nil,
       lights_on = false,
       entities = {},
-      items = {},
       lights = {},
       MAP_SIZE = Point.new(70, 30),
       LOG_SIZE = Point.new(40, 30),
-      NUM_MONSTERS = 3,
+      NUM_MONSTERS = 10,
+	  NUM_IMMORTALITEMS = 7,
+	  timer = -1
     },
 
     methods = {
@@ -75,30 +76,26 @@ local Game = class.class(
         termfx.attributes(FG, BG)
         ok, err = pcall(function()
             self:Draw()
-			local count = 0
-            while true do
-              evt = termfx.pollevent()
-              if evt.char == "q" then
+      	local count = 0
+        while true do
+			if self:IsGameClear() then
+				self:Log('You won!! Congrats!')
+			end
+        	evt = termfx.pollevent()
+            if evt.char == "q" then
                 break
-              else
-				count = count + 1
-				if count == 10 then 
-					if self.hero.getState() == nil then
-                		self.hero:gotoState('immortal')
-						self:Log("hero is immortal now!")
-					elseif self.hero.getState() == 'immortal' then
-						self.hero:gotoState('weak')
-						self:Log("hero is weak now!")
-					elseif self.hero.getState() == 'weak' then
-						self.hero:gotoState(nil)
-						self:Log('hero is normal now!')
-					end
-					count = 0
+            else
+				if self.timer > 0 then 
+					self.timer = self.timer - 1
+				elseif self.timer == 0 then 
+					self.hero:gotoState(nil)
+					self:Log('Hero is normal now!')
+					self.timer = -1
 				end
-				self:HandleInput(evt)
-              end
-              self:Draw()
-            end
+        		self:HandleInput(evt)
+        	end
+            self:Draw()
+        end
         end)
         termfx.shutdown()
 
@@ -120,7 +117,7 @@ local Game = class.class(
         for _, e in ipairs(self.entities) do
           if dst == e:Pos() then
             entity:Collide(e)
-            return
+			if e:Id() < 1000 then return end
           end
         end
 
@@ -130,9 +127,9 @@ local Game = class.class(
 
       Log = function(self, entry)
         entry = "> " .. entry
-	    --print('inside Log before for loop')
+      --print('inside Log before for loop')
         for line in entry:gmatch("[^\r\n]+") do
-		  --print('log_size:', self.LOG_SIZE)     -- will edit
+      --print('log_size:', self.LOG_SIZE)     -- will edit
           while line:len() > self.LOG_SIZE:X() do
             table.insert(self.log, line:sub(1, self.LOG_SIZE:X()))
             line = " " .. line:sub(self.LOG_SIZE:X() + 1)
@@ -159,6 +156,22 @@ local Game = class.class(
           end
         end
       end,
+
+	  GoImmortal = function(self)
+        self.hero:gotoState('immortal')
+        self:Log("Hero is immortal now!")
+		self.timer = self.timer + 30
+	  end,
+
+	  IsGameClear = function(self)
+		local gameclear = true
+        for _, e in ipairs(self.entities) do
+        	if e:isinstance(Monster) then
+				gameclear = false
+			end
+		end
+		return gameclear
+	  end,
 
       Hero = function(self)
         return self.hero

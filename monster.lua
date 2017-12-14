@@ -13,7 +13,11 @@ local Monster = class.class(
       end,
 
       Collide = function(self, e)
-        self.game:Log("A monster hits you for 2 damage.")
+		if self.game.hero.getState() == 'immortal' then
+			self.game:Log('A monster hits you but ...')
+		else
+        	self.game:Log("A monster hits you for 2 damage.")
+		end
         e:SetHealth(e:Health() - 2)
       end,
 
