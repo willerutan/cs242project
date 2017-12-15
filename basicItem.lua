@@ -20,13 +20,12 @@ end
 local id = 1000
 
 local basicItem = {
-  constructor = function(self, game, pos, itemType)
+  constructor = function(self, game, pos)
     -- print("game", game, pos)
     self.game = game
     self.pos = pos
     self.id = id
     id = id + 1
-	self.itemType = itemType
   end,
 
   data = {
@@ -36,10 +35,6 @@ local basicItem = {
   }, 
 
   methods = {
-
-	  ItemType = function(self)
-		return self.itemType
-	  end,
 
       Id = function(self)
         return self.id
@@ -51,24 +46,6 @@ local basicItem = {
 
       SetPos = function(self, pos)
         self.pos = pos
-      end,
-
-      Char = function(self)
-		if self.itemType == 'immortal' then
-        	return "I"
-		end
-		if self.itemType == 'bomb' then
-			return "B"
-		end
-      end,
-
-      Color = function(self)
-		if self.itemType == 'immortal' then
-        	return termfx.color.BLUE
-		end
-		if self.itemType == 'bomb' then
-			return termfx.color.MAGENTA
-		end
       end,
 
       Value = function(self)
@@ -87,16 +64,7 @@ local basicItem = {
         
       end,
 
-      Think = function(self) end,
-
-      ComputeLighting = function(self, _, intensity)
-        -- not sure why I need a _ variable
-        local _, r, g, b = termfx.colorinfo(self:Color())
-        return termfx.rgb2color(
-          math.ceil(r * intensity / 256.0 * 5.0),
-          math.ceil(g * intensity / 256.0 * 5.0),
-          math.ceil(b * intensity / 256.0 * 5.0))
-      end
+      Think = function(self) end
   }
 }
 

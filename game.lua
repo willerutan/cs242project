@@ -5,7 +5,8 @@ local Monster = require "monster"
 local Light = require "light"
 local ClassComponent = require "classComponent"
 local basicItem = require "basicItem"
-local immortalItem = require 'immortalItem'
+local immortal = require 'immortal'
+local bomb = require 'bomb'
 
 local FG
 local BG
@@ -45,13 +46,15 @@ local Game = class.class(
 
       for i = 1, self.NUM_IMMORTALITEMS do
         local item = Item.new()
-        item:addComponent("basicItem", basicItem, self, self:RandomFloor(), 'immortal')
+        item:addComponent("basicItem", basicItem, self, self:RandomFloor())
+        item:addComponent("immortal", immortal)
         table.insert(self.entities, item)
       end
 
 	  for i = 1, self.NUM_BOMBS do
         local item = Item.new()
-        item:addComponent("basicItem", basicItem, self, self:RandomFloor(), 'bomb')
+        item:addComponent("basicItem", basicItem, self, self:RandomFloor())
+        item:addComponent("bomb", bomb)
         table.insert(self.entities, item)
       end
 	
