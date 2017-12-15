@@ -27,10 +27,10 @@ local basicItem = {
   }, 
 
   methods = {
-      itemType = function(self)
+      ItemType = function(self)
         return self.itemType
       end,
-      
+
       Char = function(self)
         return "I"
       end,
