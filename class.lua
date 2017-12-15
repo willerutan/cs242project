@@ -4,7 +4,9 @@ Object = {
   constructor = function() end,
   methods = {},
   data = {},
-  metamethods = {}
+  metamethods = {},
+  currentState = nil,
+  states = {}
 }
 
 
@@ -42,7 +44,9 @@ local function class(parent, child)
   local data = child.data or {}
   local constructor = child.constructor or parent.constructor
   local metamethods = child.metamethods or {}
-	local parent_metamethods = parent.metamethods or {}
+  local parent_metamethods = parent.metamethods or {}
+  local currentState = parent.currentState
+  local states = parent.states
 
 
   local Class = {}
@@ -53,8 +57,8 @@ local function class(parent, child)
 	Class.metamethods = metamethods
 	table.merge(parent_metamethods, Class.metamethods)
 	--Class.immortal = {}
-	Class.currentState = nil
-	Class.states = {}
+	Class.currentState = currentState
+	Class.states = states
 
 	setmetatable(Class.methods, {__index = parent.methods})
 	setmetatable(Class.data, {__index = parent.data})
